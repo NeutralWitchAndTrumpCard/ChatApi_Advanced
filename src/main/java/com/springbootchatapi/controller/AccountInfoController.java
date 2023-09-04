@@ -54,7 +54,7 @@ public class AccountInfoController {
     @Autowired
     MemberRepository memberRepository;
 
-    @GetMapping("/getAccountInfo")
+    @GetMapping("/api/accountInfo")
     public Member getAccountInfo(HttpSession session) {
         // String sessionId = session.getId();
 
