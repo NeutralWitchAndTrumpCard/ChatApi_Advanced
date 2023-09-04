@@ -21,9 +21,11 @@
     </style>
     <script>
             window.onload = function() {
-                fetch('/api/accountInfo')
+                //fetch('/api/accountInfo')
+                fetch("/getAccountInfo")
                     .then(response => response.json())
                     .then(data => {
+                        console.log("Data received: ", data);
                         document.getElementById('memberId').innerText = data.id;
                         document.getElementById('memberName').innerText = data.name;
                         document.getElementById('memberEmail').innerText = data.email;
