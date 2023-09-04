@@ -2,11 +2,14 @@ package com.springbootchatapi.member;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;  // 이 부분 추가
+
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
     // 그리고 existsById와 existsByEmail 메소드는
     // MemberRepository 인터페이스에 추가해야 합니다:
