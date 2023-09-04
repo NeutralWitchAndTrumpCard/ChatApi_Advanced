@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+<head>
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+    </style>
+</head>
+
+<body>
+
+<div id="nav" style="text-align:center;">
+    <button onclick="openSignup()">회원가입</button>
+    <button onclick="openLoginWindow()">로그인</button>
+</div>
+
+<div class="box">
+    <div class=" innerBox">
+        <h2>Chat with GPT</h2>
+        <span style="font-size: 14px;">무분별한 API 요청 시 실제로 막대한 과금이 부과될 수 있습니다. ($)
+<br><br>
+    </span>
+    </div>
+</div>
+
+
+
+<div class="box" id="cloneBox">
+    <div class="innerBox">
+        <label for="clone">당신의 질문 :</label>
+        <br>
+        <textarea id="clone" name="clone" rows="4" cols="50" readonly></textarea>
+        <!-- Contents of the clone box -->
+    </div>
+</div>
+
+<div class="box" id="answerBox">
+    <div class="innerBox">
+        <!-- Contents of the answer box -->
+        <label for="response">GPT-3.5's response:</label>
+        <br>
+        <textarea id="response" name="response" rows="8" cols="50"  preview="질문 제출 시 결과가 여기에 출력됩니다." readonly></textarea>
+    </div>
+</div>
+
+<div class="box" id="questionBox">
+    <div class="innerBox">
+        <p id="selectedModelText">Selected model: gpt-3.5-turbo</p>
+        <button onclick="selectModel('gpt-3.5-turbo')">GPT-3.5</button>
+        <button onclick="selectModel('gpt-4')">GPT-4</button>
+        <form action="javascript:void(0);">
+            <label for="question"><br>Your question:</label><br>
+            <textarea id="question" name="question" rows="3" cols="50" previe="질문을 입력해주세요."></textarea><br>
+            <input type="button" value="로그 확인" onclick="logQuestion()">
+            <input type="button" value="질문 제출" onclick="getAnswer()">
+        </form>
+        <!-- Contents of the question box -->
+    </div>
+</div>
+
+<!--
+<div id="buttons">
+    <button>로그 확인</button>
+    <button>질문 제출</button>
+</div>
+-->
+</div>
+
+
+
+
+<script>
+    var selectedModel = 'gpt-3.5-turbo'; // Default model
+
+    function selectModel(modelName) {
+        selectedModel = modelName;
+        document.getElementById('selectedModelText').textContent = 'Selected model: ' + modelName;
+    }
+    function logQuestion() {
+        console.log("Selected model: " + selectedModel);
+        var question = document.getElementById("question").value;
+        console.log("Copying question: " + question);
+        //document.getElementById("clone").value = question;
+    }
+    function getAnswer() {
+        var question = document.getElementById("question").value;
+        console.log("Selected model: " + selectedModel);
+        console.log("Submitting question: " + question);
+
+        // API 요청을 보내고 응답을 받는 코드를 작성합니다.
+        // 이 부분은 보통 JavaScript의 fetch API나 jQuery의 $.ajax와 같은 기능을 사용하여 구현합니다.
+        // 예를 들면 다음과 같습니다.
+
+        var requestUrl = 'http://localhost:8080/bot/chat?prompt='
+            + encodeURIComponent(question) + '&model=' + encodeURIComponent(selectedModel);
+
+        console.log("Sending request to: " + requestUrl);
+
+        fetch(requestUrl, {method: 'GET'})
+            .then(response => {
+                console.log("Received response from API");
+                return response.text();
+            })
+            .then(data => {
+                console.log("Data from API: ", data);
+                document.getElementById("response").textContent = data;
+                document.getElementById("clone").value = question; // 질문 복사
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function openSignup() {
+        // 회원가입 페이지 URL을 넣어주세요.
+        window.open('../account/register.html', '_blank', 'width=480,height=480');
+    }
+
+    /*
+    function openLogin() {
+        // 로그인 페이지 URL을 넣어주세요.
+        window.open('login.html', '_blank', 'width=480,height=480');
+    }
+     */
+
+    function openLoginWindow() {
+        var loginWindow = window.open('../account/login.html', '_blank', 'width=480,height=480');
+
+        // 로그인 창이 닫히는 것을 감지
+        var timer = setInterval(function() {
+            if(loginWindow.closed) {
+                clearInterval(timer);
+                location.reload();  // 로그인 창이 닫히면 메인 페이지 새로고침
+            }
+        }, 500);
+    }
+
+    function checkLoginStatus() {
+        var url = 'http://localhost:8080/checkLoginStatus';
+
+        fetch(url, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.loggedIn) {
+                    // 로그인 상태 처리
+                    var nav = document.getElementById('nav');
+
+                    // '회원가입'과 '로그인' 버튼 제거
+                    removeInitialButtons();
+
+                    /*  nav.innerHTML = '환영합니다, ' + data.name + '! <button onclick="logout()">로그아웃</button>';
+                     // 회원정보 및 수정 버튼 추가
+                    createInfoButton(nav); */ // 접근법 수정
+
+                    // 환영 문구 추가
+                    createWelcomeText(nav, data.name);
+
+                    // 회원정보 및 수정 버튼 추가
+                    createInfoButton(nav);
+
+                    // 로그아웃 버튼 추가
+                    createLogoutButton(nav);
+
+                } else {
+                    // 비로그인 상태 처리
+                    //alert('로그인이 필요합니다.');
+                    //openLogin();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function createWelcomeText(nav, name) {
+        const text = document.createElement("span");
+        text.innerHTML = '환영합니다, ' + name + '!&nbsp;';
+        nav.appendChild(text);
+    }
+
+    function createInfoButton() {
+        const btn = document.createElement("button");
+        btn.innerHTML = "회원정보/수정";
+        btn.onclick = function() {
+            window.open('../account/account_info.html', '_blank', 'width=480,height=640');
+        };
+        // document.body.appendChild(btn); // 이건 body에 추가하고 싶을 때  사용한다.
+         nav.appendChild(btn); // 로그아웃 버튼 다음에 버튼이 추가됨
+        // nav.insertBefore(btn, nav.firstChild); // 로그아웃 버튼 이전에 버튼이 추가됨
+    }
+
+    function removeInitialButtons() {
+        // '회원가입'과 '로그인' 버튼을 찾아 제거
+        var signupButton = document.querySelector("button[onclick='openSignup()']");
+        var loginButton = document.querySelector("button[onclick='openLoginWindow()']");
+        if (signupButton) signupButton.remove();
+        if (loginButton) loginButton.remove();
+    }
+
+    function createLogoutButton(nav) {
+        const btn = document.createElement("button");
+        btn.innerHTML = "로그아웃";
+        btn.onclick = function() {
+            logout();
+        };
+        nav.appendChild(btn);
+    }
+
+
+
+    function logout() {
+        fetch('http://localhost:8080/logout', {
+            method: 'POST',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            });
+    }
+
+    // window.onload = checkLoginStatus;
+
+    window.onload = function() {
+        checkLoginStatus();
+    }
+
+
+
+
+</script>
+</body>

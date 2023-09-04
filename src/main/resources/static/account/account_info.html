@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<meta charset="UTF-8">
+
+<head>
+    <title>Account Info</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            gap: 10px;
+        }
+    </style>
+    <script>
+            window.onload = function() {
+                fetch('/api/accountInfo')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('memberId').innerText = data.id;
+                        document.getElementById('memberName').innerText = data.name;
+                        document.getElementById('memberEmail').innerText = data.email;
+                    })
+                    .catch(error => console.error('Error:', error));
+            };
+
+
+
+    </script>
+</head>
+
+<body>
+<h2>회원정보</h2>
+<p>ID: <span id="memberId"></span></p>
+<p>이름: <span id="membername"></span></p>
+<p>이메일: <span id="memberEmail"></span></p>
+
+<button onclick="window.location.href='../account/account_modify.html'">회원정보 수정</button>
+<button onclick="window.location.href='../account/account_password_modify.html'">비밀번호 변경</button>
+</body>
+

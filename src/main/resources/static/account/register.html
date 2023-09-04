@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<meta charset="UTF-8">
+
+<head>
+    <title>회원가입</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<form>
+    회원가입 ID : <input type="text" id="id" placeholder="ID">
+    회원가입 닉네임 : <input type="text" id="name" placeholder="Name">
+    회원가입 PW : <input type="password" id="password" placeholder="비밀번호">
+    PW 일치 확인 : <input type="password" id="confirm_password" placeholder="비밀번호 확인">
+    이메일 : <input type="email" id="email" placeholder="이메일">
+    <button type="submit">확인</button><button type="button" onclick="window.close()">닫기</button>
+</form>
+
+<script>
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // 폼 제출을 막음
+
+        var id = document.getElementById('id').value;
+        var name = document.getElementById('name').value;
+        var password = document.getElementById('password').value;
+        var confirm_password = document.getElementById('confirm_password').value;
+        var email = document.getElementById('email').value;
+
+        if (!id || !name || !password || !confirm_password || !email) {
+            alert('모든 필드를 채워주세요.');
+            return;
+        }
+
+        if (password !== confirm_password) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        // 여기서 회원가입 요청을 서버에 보냅니다.
+        // 예를 들어, fetch API를 사용하여 POST 요청을 보낼 수 있습니다.
+
+        // register.html에서  url을 http://localhost:8080/register 로 변경
+        // 혹은 RegisterController.java에서 @RequestMapping("/api") 삭제
+
+        var url = 'http://localhost:8080/register';
+        var data = {
+            id: id,
+            name: name,  // <-- Add this line
+            password: password,
+            email: email,
+        };
+        var headers = {
+            'Content-Type': 'application/json',
+        };
+
+        // Log the request details
+        console.log("Sending POST request to " + url);
+        console.log("Request headers: ", headers);
+        console.log("Request body: ", data);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 에러 응답을 JSON으로 변환
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('회원가입 성공:', data);
+                // Show the success message to the user
+                alert(data.message);
+                // 회원가입 성공 후 login.html 페이지로 리다이렉트한다
+                window.location.href = "/account/login.html";
+            })
+            .catch(error => {
+                console.log('회원가입 실패:', error.message);
+                // Show the error message to the user
+                alert('회원가입에 실패했습니다: ' + error.message);
+            });
+    });
+
+
+</script>
+</body>
+</html>

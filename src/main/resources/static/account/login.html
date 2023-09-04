@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<meta charset="UTF-8">
+
+<head>
+<title>로그인</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        gap: 10px;
+    }
+</style>
+</head>
+<body>
+<form>
+    <input type="text" id="id" placeholder="ID">
+    <input type="password" id="password" placeholder="비밀번호">
+    <button type="submit">로그인</button><button type="button" onclick="window.open('register.html', '_blank', 'width=480,height=480')">회원가입</button>
+</form>
+
+    <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // 폼 제출을 막음
+
+        var id = document.getElementById('id').value;
+        var password = document.getElementById('password').value;
+
+        if (!id || !password ) {
+            alert('모든 필드를 채워주세요.');
+            return;
+        }
+
+        var url = 'http://localhost:8080/login';
+        var data = {
+            id: id,
+            password: password,
+        };
+
+        // 로그인 요청을 서버에 보냅니다.
+
+        /* 백업
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 에러 응답을 JSON으로 변환
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // 로그인 성공 처리
+                } else {
+                    alert(data.message);
+                    // 로그인 실패 처리
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+         */
+
+        // In login.html
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    // 에러 응답을 JSON으로 변환
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    console.log('로그인 성공: ', data.message);  // Log success
+                    alert(data.message);
+                    window.close();  // 로그인 성공 후 창 닫기
+                } else {
+                    if (data.message === 'ID가 틀렸거나 존재하지 않습니다.') {
+                        console.log('Log login error (ID) : ', data.message);  // Log ID error
+                    } else if (data.message === '비밀번호가 틀렸습니다.') {
+                        console.log('Log login error (PW): ', data.message);  // Log password error
+                    }
+                    alert(data.message);
+                }
+            })
+            .catch((error) => {
+                console.error('예상치 못한 오류 (unexpected error) : ', error);  // Log unexpected error
+            });
+    });
+
+    function loginlog() {
+        console.log("Login function called.");
+        // ... 기존 코드
+        then(response => {
+            console.log("Login success:", response);
+        })
+            .catch(error => {
+                console.log("Login error:", error);
+            });
+    }
+
+    </script>
+</body>
+</html>

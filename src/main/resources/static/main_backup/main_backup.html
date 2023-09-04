@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<body>
+
+<h2>Chat with GPT-4</h2>
+
+localhost 주소를 확인해주세요. 포트 8080은 실전이고 포트 63342는 프리뷰입니다.<br><br>
+무분별한 API 요청 시 실제로 막대한 과금이 부담될 수 있습니다. ($)
+
+<form action="javascript:void(0);">
+    <label for="question">Your question:</label><br>
+    <textarea id="question" name="question" rows="3" cols="50" previe="질문을 입력해주세요."></textarea><br>
+    <input type="button" value="내용 확인" onclick="copyQuestion()">
+    <input type="button" value="질문 제출" onclick="getAnswer()">
+</form>
+
+<div>
+    <label for="clone">Clone of your question (당신이 제출한 질문):</label>
+    <br>
+    <textarea id="clone" name="clone" rows="3" cols="50" readonly></textarea>
+</div>
+
+<div>
+    <label for="response">GPT-3.5's response:</label>
+    <br>
+    <textarea id="response" name="response" rows="8" cols="50"  preview="질문 제출 시 결과가 여기에 출력됩니다." readonly></textarea>
+</div>
+
+
+
+
+
+
+<script>
+    function copyQuestion() {
+        var question = document.getElementById("question").value;
+        console.log("Copying question: " + question);
+        document.getElementById("clone").value = question;
+    }
+    function getAnswer() {
+        var question = document.getElementById("question").value;
+        console.log("Submitting question: " + question);
+
+        // API 요청을 보내고 응답을 받는 코드를 작성합니다.
+        // 이 부분은 보통 JavaScript의 fetch API나 jQuery의 $.ajax와 같은 기능을 사용하여 구현합니다.
+        // 예를 들면 다음과 같습니다.
+
+        fetch('http://localhost:8080/bot/chat?prompt=' + encodeURIComponent(question))
+            .then(response => {
+                console.log("Received response from API");
+                return response.text();
+            })
+            .then(data => {
+                console.log("Data from API: ", data);
+                document.getElementById("response").value = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+
+</script>

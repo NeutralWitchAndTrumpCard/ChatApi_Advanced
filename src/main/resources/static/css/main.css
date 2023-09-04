@@ -1,0 +1,86 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh; /* Use 100% of the viewport height */
+}
+
+
+.box {
+    width: 80%;
+    max-width: 800px;
+    padding: 20px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.innerBox {
+    width: 100%; /* Or whatever you need */
+    text-align: left;
+}
+
+@font-face {
+    font-family: 'GyeonggiTitleM';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GyeonggiTitleM.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'GyeonggiTitleM', sans-serif;
+    font-size: 22px;
+}
+h1 {font-size: 56px;}
+h2 {font-size: 52px;}
+h3 {font-size: 48px;}
+h4 {font-size: 44px;}
+h4 {font-size: 40px;}
+h4 {font-size: 36px;}
+h4 {font-size: 32px;}
+
+
+
+
+
+.code-block {
+    width: 100%;
+    background-color: black;
+    color: white;
+    font-size: 12px;
+}
+
+.code-header {
+    background-color: gray;
+    padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.code-title {
+    margin: 0;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.copy-button {
+    border: none;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+pre code {
+    font-family: 'GyeonggiTitleM', sans-serif;
+    padding: 10px;
+    display: block;
+    white-space: pre;
+    font-size: 12px;
+}
