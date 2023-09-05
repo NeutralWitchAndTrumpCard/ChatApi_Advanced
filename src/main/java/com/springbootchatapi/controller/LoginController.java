@@ -28,6 +28,7 @@ public class LoginController {
 
     @Autowired
     private MemberRepository repository;    // 추가사항
+
     private HttpSession httpSession;  // Inject HttpSession
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);       // 추가사항
