@@ -21,6 +21,9 @@
     </style>
     <script>
             window.onload = function() {
+                // 로그인 상태 확인
+                checkLoginStatus();
+
                 //fetch('/api/accountInfo')
                 fetch("/getAccountInfo")
                     .then(response => response.json())
@@ -33,15 +36,44 @@
                     .catch(error => console.error('Error:', error));
             };
 
+            function checkLoginStatus() {
+                // 로그인 상태 확인
+                var response = fetch('/checkLoginStatus', {credentials: 'include'});
 
-
+                response
+                    .then(response => {
+                        if (response.status === 200) {
+                            response
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.loggedIn) {
+                                        // 로그인 상태
+                                        // 회원 정보 가져오기
+                                        fetch("/getAccountInfo", {credentials: 'include'})
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                // 회원 정보 출력
+                                                document.getElementById('memberId').innerText = data.id;
+                                                document.getElementById('memberName').innerText = data.name;
+                                                document.getElementById('memberEmail').innerText = data.email;
+                                            })
+                                            .catch(error => console.error('Error:', error));
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        } else {
+                            console.log('Error: Status code is not 200.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
     </script>
 </head>
 
 <body>
 <h2>회원정보</h2>
 <p>ID: <span id="memberId"></span></p>
-<p>이름: <span id="membername"></span></p>
+<p>이름: <span id="memberName"></span></p>
 <p>이메일: <span id="memberEmail"></span></p>
 
 <button onclick="window.location.href='../account/account_modify.html'">회원정보 수정</button>
