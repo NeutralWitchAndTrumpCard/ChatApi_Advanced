@@ -63,6 +63,7 @@ public class LoginController {
         httpSession.setAttribute("user", member);
         logger.info("로그인 성공: 로그인에 성공하였습니다.");  // Log success
 
+
         response.put("success", true);
         response.put("message", "로그인에 성공하였습니다.");
         return new ResponseEntity<>(response, HttpStatus.OK);
