@@ -1,6 +1,7 @@
 package com.springbootchatapi.controller;
 
-import com.springbootchatapi.account.AccountInformation;
+
+// import com.springbootchatapi.account.AccountInformation;
 import com.springbootchatapi.member.Member;
 import com.springbootchatapi.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RestController
+public class AccountInfoController {
+
+    @GetMapping("/getAccountDataWhenLoggedIn")
+    public Map<String, Object> getAccountDataWhenLoggedIn(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        Member member = (Member) session.getAttribute("user");
+        if (member != null) {
+            // 로그인 상태
+            response.put("loggedIn", true);
+            response.put("name", member.getName());
+            response.put("id", member.getId());
+            response.put("email", member.getEmail());
+            response.put("createdAt", member.getCreatedAt());
+        } else {
+            // 비로그인 상태
+            response.put("loggedIn", false);
+        }
+        return response;
+    }
+
+}
+
+
+
+
+/* Legacy code final date in 2023-09-07 14:07
 @RestController
 public class AccountInfoController {
 
@@ -47,14 +77,13 @@ public class AccountInfoController {
 
     }
 
-
     public static class AccountInfo {
     }
 
     @Autowired
     MemberRepository memberRepository;
 
-    @GetMapping("/api/accountInfo")
+    @GetMapping("/api/accountInfoFromLoginId")
     public Member getAccountInfo(HttpSession session) {
         // String sessionId = session.getId();
 
@@ -70,4 +99,4 @@ public class AccountInfoController {
 
 
 }
-
+*/

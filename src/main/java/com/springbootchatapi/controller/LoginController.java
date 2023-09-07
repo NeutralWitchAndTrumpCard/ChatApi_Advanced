@@ -88,6 +88,9 @@ public class LoginController {
             // 로그인 상태
             response.put("loggedIn", true);
             response.put("name", member.getName());
+            response.put("id", member.getId());
+            response.put("email", member.getEmail());
+            response.put("createdAt", member.getCreatedAt());
         } else {
             // 비로그인 상태
             response.put("loggedIn", false);

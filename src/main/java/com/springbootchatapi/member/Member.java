@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import java.io.Serializable;        // 멤버 클래스 직렬화
+import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +65,27 @@ public class Member implements Serializable{
     }
 
     public String getId() {
+        logger.info("Fetching Id. ");
         return id;
     }
 
     public String getName() {
+        logger.info("Fetching Name. ");
         return name;
     }
 
     public String getEmail() {
         logger.info("Fetching email.");
         return email;
+    }
+
+    public String getCreatedAt() {
+        if (createdAt == null) {
+            return "가입 시간 정보가 없습니다. (null)";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        logger.info("Fetching CreatedAt.");
+        return createdAt.format(formatter);
     }
 
     public String getPassword() {
