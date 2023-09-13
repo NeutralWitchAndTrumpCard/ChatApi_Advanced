@@ -223,9 +223,29 @@
 
                 if (data.success) {
                     alert("회원 정보가 성공적으로 변경되었습니다.");
-                    // 페이지 새로고침 또는 DOM 업데이트
-                    location.reload();  // 페이지를 새로고침하거나
-                    document.getElementById('memberName').innerText = newName;  // 또는 DOM을 직접 수정
+                    alert("안정적인 로그인 세션 처리를 위해 자동 로그아웃 됩니다. 다시 로그인 해주세요.");
+
+                    // main.html의 로그아웃 함수 호출
+                    fetch('http://localhost:8080/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    }).then(() => {
+                        // 로그아웃 후 처리
+                        window.close();  // 현재 창을 닫음
+                    });
+                    /*
+                    // 로컬 스토리지 업데이트
+                    fetchAndUpdateUserInfo().then(() => {
+                        // 로컬 스토리지 업데이트 후 실행됨.
+                        const sessionData = JSON.parse(localStorage.getItem("session"));
+
+                        // 프론트엔드 데이터 업데이트
+                        document.getElementById('memberName').innerText = sessionData.name;
+                        document.getElementById('memberId').innerText = sessionData.id;
+                        document.getElementById("name_recent").value = sessionData.name;
+                        document.getElementById("email_recent").value = sessionData.email;
+                    });
+                     */
                 } else if (data.duplicate) {
                     alert("이름 혹은 이메일이 중복 상태이거나, 다른 오류로 회원 정보 변경에 실패했습니다.");
                 }
@@ -234,6 +254,22 @@
                 console.error("API Error:", error);
             }
         }
+
+        /*          //회원정보를 수정하고 수정된 데이터를 서버로부터 불러올 수 있게 갱신하는 코드
+        async function fetchAndUpdateUserInfo(){
+            try{
+                const response = await fetch('getAccountDataWhenLoggedIn',{credentials: 'include'});
+                const data = await response.json();
+                if(data.loggedIn) {
+                    localStorage.setItem("session", JSON.stringify(data));
+                }
+            } catch (error){
+                console.error('Error: ', error);
+            }
+        }
+        */
+
+
 
 
 
