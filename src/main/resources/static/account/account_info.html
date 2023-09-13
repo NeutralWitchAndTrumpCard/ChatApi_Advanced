@@ -20,26 +20,30 @@
         }
     </style>
     <script>
+        /*
         window.onload = function() {
+            console.log("Current URL:", window.location.href);
             // 로그인 상태 확인
             checkLoginStatusAndGetAccountData();
 
-            /* 230907-15:16 더이상 불필요한 부분?
+            // 230907-15:16 더이상 불필요한 부분?
             // HttpSession 객체를 사용하여 로그인한 사용자의 정보를 가져옵니다.
-            const session = localStorage.getItem("session");
+            // const session = localStorage.getItem("session");
 
             // session 내용을 콘솔에 출력
-            console.log("Session from localStorage:", session);
+            // console.log("Session from localStorage:", session);
 
-            if (session) {
-                const user = JSON.parse(session);
+            // if (session) {
+            //    const user = JSON.parse(session);
 
                 // user 객체 내용을 콘솔에 출력
-                console.log("Parsed user object:", user);
-            }
-            */
-        };
+            //    console.log("Parsed user object:", user);
+            // }
 
+        };
+        /*
+
+        /*
         //async 포함
         async function checkLoginStatusAndGetAccountData() {
             // 주의 : 회원 정보 출력 로직: checkLoginStatusAndGetAccountData 함수에서
@@ -48,18 +52,17 @@
 
             // 로그인 상태 확인
 
-            /* let을 사용하는게 더 나을 수 있음
-                fetch 앞에 await을 달면 response로 나오면 json값을 나오게 할 수 있음
-                if문으로 수동 처리
-                await를 붙이고 밑에 있는 코드를 수정해보자.
-                then 아래에 있는 것을 고치는 것.
-                response 객체를 쓴다는게 아니라 primise 객체를 가져와 쓰겠다는 것
-                await를 붙여 쓰는 그순간부터는 비동기식이 된다는 것.
-                비동기라는건.. 함수는 실행하고 끝나는데 가끔 언제 돌아올지 모르는 애들이 있음 (네트워크 통신)
-                코드를 Async하게 맞춰 수정하기
+            // let을 사용하는게 더 나을 수 있음
+            // fetch 앞에 await을 달면 response로 나오면 json값을 나오게 할 수 있음
+            // if문으로 수동 처리
+            // await를 붙이고 밑에 있는 코드를 수정해보자.
+            //    then 아래에 있는 것을 고치는 것.
+            //    response 객체를 쓴다는게 아니라 primise 객체를 가져와 쓰겠다는 것
+            //   await를 붙여 쓰는 그순간부터는 비동기식이 된다는 것.
+            //   비동기라는건.. 함수는 실행하고 끝나는데 가끔 언제 돌아올지 모르는 애들이 있음 (네트워크 통신)
+            //   코드를 Async하게 맞춰 수정하기
 
-                await를 붙이며 async 함수가 붙지 않기때문에 그대로 쓰면 된다.
-            */
+            //   await를 붙이며 async 함수가 붙지 않기때문에 그대로 쓰면 된다.
 
             try {
                 const response = await fetch('/getAccountDataWhenLoggedIn', {credentials: 'include'});
@@ -87,8 +90,74 @@
             } catch (error) {
                 console.error('Error:', error);
             }
-
+            // 0.5초 후에 함수를 종료
+            await new Promise(resolve => setTimeout(resolve, 500));
+            console.log('#async function has just finished in 0.5sec.');
         }
+
+        function navigateToModifyPage(event) {
+            event.stopPropagation();  // 이벤트 전파를 중단 (async 함수 중단)
+            window.location.href = '../account/account_modify.html';
+        }
+
+         */
+
+        // 비동기 함수 checkLoginStatusAndGetAccountData 내부에서 페이지 이동 로직을 다루고 있어서,
+        // 페이지 이동 로직을 제거하고, 별도의 버튼 클릭 이벤트에서 페이지 이동 처리를 해야 함
+        async function checkLoginStatusAndGetAccountData() {
+            try {
+                const response = await fetch('/getAccountDataWhenLoggedIn', {credentials: 'include'});
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (data.loggedIn) {
+                        localStorage.setItem("session", JSON.stringify(data));
+
+                        // 회원 정보 출력 로직
+                        const user = data;
+
+                        document.getElementById('memberId').innerText = user.id;
+                        document.getElementById('memberName').innerText = user.name;
+                        document.getElementById('memberEmail').innerText = user.email;
+                        document.getElementById('memberCreatedAt').innerText = user.createdAt;
+
+                        // 회원 데이터를 브라우저 콘솔에 출력
+                        console.log("Fetched user data : ", user);
+                        console.log("Fetched user data:", JSON.stringify(user));
+                    }
+                } else {
+                    console.log('Error: Status code is not 200.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // 별도의 이벤트 버튼을 만들어 비동기 함수와 별개로 작동하도록 함
+        function navigateToModifyPage(event) {
+            event.preventDefault();
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            if (sessionData && sessionData.loggedIn) {
+                window.location.href = '../account/account_modify.html';
+            } else {
+                alert('로그인이 필요합니다.');
+            }
+        }
+
+        function navigateToPasswordModifyPage(event) {
+            event.preventDefault();
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            if (sessionData && sessionData.loggedIn) {
+                window.location.href = '../account/account_password_modify.html';
+            } else {
+                alert('로그인이 필요합니다.');
+            }
+        }
+
+        window.onload = function() {
+            console.log("Current URL:", window.location.href);
+            checkLoginStatusAndGetAccountData();
+        };
+
     </script>
 </head>
 
@@ -100,8 +169,10 @@
     <p>이름: <span id="memberName"></span></p>
     <p>이메일: <span id="memberEmail"></span></p>
     <p>회원가입일: <span id="memberCreatedAt"></span></p>
-    <button onclick="window.location.href='../account/account_modify.html'">회원정보 수정</button>
-    <button onclick="window.location.href='../account/account_password_modify.html'">비밀번호 변경</button>
+    <!-- <button onclick=window.location.href='../account/account_modify.html'>회원정보 수정</button> -->
+    <button onclick="navigateToModifyPage(event)">회원정보 수정</button>
+    <!-- <button onclick=window.location.href='../account/account_password_modify.html'>비밀번호 변경</button> -->
+    <button onclick="navigateToPasswordModifyPage(event)">비밀번호 변경</button>
 </form>
 </body>
 

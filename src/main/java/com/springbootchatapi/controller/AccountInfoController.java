@@ -6,6 +6,7 @@ import com.springbootchatapi.member.Member;
 import com.springbootchatapi.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,6 +38,11 @@ public class AccountInfoController {
             response.put("loggedIn", false);
         }
         return response;
+    }
+
+    @PostMapping("/logRedirect")
+    public void logRedirect() {
+        System.out.println("User is about to redirect to account_modify.html");
     }
 
 }

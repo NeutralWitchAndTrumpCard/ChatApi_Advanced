@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<meta charset="UTF-8">
+
+<head>
+    <title>Account Info</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            gap: 10px;
+        }
+        #name_recent, #email_recent {
+            background-color: #D8D8D8;
+        }
+        .readonly {
+            background-color: #D8D8D8;
+        }
+    </style>
+
+    <script>
+        // 페이지 로딩이 완료되었을 때 실행되는 함수
+        async function checkLoginStatusAndGetAccountData_AccountModify() {
+            // 로그인 상태와 회원 정보 확인 로직
+            event.preventDefault();
+
+            const nameToCheck = document.getElementById("name_modify").value;
+            const emailToCheck = document.getElementById("email_modify").value;
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            const currentName = sessionData.name;
+
+
+            try {
+                const response = await fetch('/getAccountDataWhenLoggedIn_AccountModify', {credentials: 'include'});
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (data.loggedIn) {
+                        localStorage.setItem("session", JSON.stringify(data));
+
+                        // 회원 정보 출력 로직
+                        const user = data;  // <--- 여기에 user 변수를 정의해야 user명을 알 수 있음.
+
+                        document.getElementById('memberId').innerText = user.id;
+                        document.getElementById("name_recent").value = data.name;
+                        document.getElementById("email_recent").value = data.email;
+
+                        // 회원 데이터를 브라우저 콘솔에 출력
+                        console.log("Fetched user data : ", user);
+                        // 필요할 경우, 객체를 문자열로 직렬화하면서, JSON 문자열로 변환하여 출력
+                        console.log("Fetched user data:", JSON.stringify(user));
+                    }
+                } else {
+                    console.log('Error: Status code is not 200.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+        }
+
+
+        // 중복 이름 확인 버튼을 눌렀을 때 실행되는 함수
+        async function checkDuplicateName(event) {
+            event.preventDefault();
+            // 중복 이름 확인 로직
+            const nameToCheck = document.getElementById("name_modify").value;
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            const currentName = sessionData.name;
+
+            if (currentName === nameToCheck) {
+                alert("현재 회원님의 이름입니다.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/checkDuplicateName', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: nameToCheck}),
+                });
+
+                const data = await response.json();
+
+                if (data.duplicate) {
+                    alert("이미 사용중인 닉네임입니다.");
+                } else {
+                    alert("사용 가능한 닉네임입니다.");
+                    // 사용 가능한 이름이 확인되면
+                    document.getElementById("name_modify").readOnly = true;
+                    document.getElementById("name_modify").classList.add("readonly");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // 중복 이메일 확인 버튼을 눌렀을 때 실행되는 함수
+        async function checkDuplicateEmail(event) {
+            event.preventDefault();
+            // 중복 이메일 확인 로직
+            const emailToCheck = document.getElementById("email_modify").value;
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            const currentEmail = sessionData.email;
+
+            if (currentEmail === emailToCheck) {
+                alert("현재 회원님의 이메일입니다.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/checkDuplicateEmail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name: emailToCheck}),
+                });
+
+                const data = await response.json();
+
+                if (data.duplicate) {
+                    alert("이미 사용중인 이메일입니다.");
+                } else {
+                    alert("사용 가능한 이메일입니다.");
+                    // 사용 가능한 이메일이 확인되면
+                    document.getElementById("email_modify").readOnly = true;
+                    document.getElementById("email_modify").classList.add("readonly");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // 별도의 이벤트 버튼을 만들어 비동기 함수와 별개로 작동하도록 함
+        function navigateToAccountInfoPage(event) {
+            event.preventDefault();
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            if (sessionData && sessionData.loggedIn) {
+                window.location.href = '../account/account_Info.html';
+            } else {
+                alert('로그인이 필요합니다.');
+            }
+        }
+
+        // onload 함수만 분리
+        window.onload = function() {
+            console.log("Current URL:", window.location.href);
+            checkLoginStatusAndGetAccountData_AccountModify();
+        };
+
+        function resetNameInput(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById("name_modify");
+            nameInput.readOnly = false;
+            nameInput.classList.remove("readonly");
+        }
+
+        function resetEmailInput(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById("email_modify");
+            nameInput.readOnly = false;
+            nameInput.classList.remove("readonly");
+        }
+
+        //Final : async 함수로 계정 정보를 업데이트 하는 함수 (변경 확정 버튼 누른 후)
+        async function updateAccountInfo(event) {
+            console.log("updateAccountInfo called.");
+            event.preventDefault();
+            const sessionData = JSON.parse(localStorage.getItem("session"));
+            console.log("Session Data: ", sessionData);
+
+            if (!sessionData) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+            const newName = document.getElementById("name_modify").value;
+            const newEmail = document.getElementById("email_modify").value;
+            console.log("New Name:", newName, "New Email:", newEmail);
+
+            //유효성 검사
+            if (!newName && !newEmail) {
+                alert("변경할 이름 혹은 이메일 필드를 채운 후 각각 중복 검사를 실시해주세요.");
+                return;
+            }
+
+            if (newName && !newEmail) {
+                const confirmName = window.confirm("정말 이름만 변경하겠습니까?");
+                if (!confirmName) return;
+            }
+
+            if (newEmail && !newName) {
+                const confirmEmail = window.confirm("정말 이메일만 변경하겠습니까?");
+                if (!confirmEmail) return;
+            }
+
+            // 서버에 변경 요청
+            try {
+                const response = await fetch('/updateAccountInfo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: sessionData.id,
+                        name: newName,
+                        email: newEmail
+                    })
+                });
+                console.log("API Response:", response);
+
+                const data = await response.json();
+                console.log("API Response Data:", data);
+
+                if (data.success) {
+                    alert("회원 정보가 성공적으로 변경되었습니다.");
+                    // 페이지 새로고침 또는 DOM 업데이트
+                    location.reload();  // 페이지를 새로고침하거나
+                    document.getElementById('memberName').innerText = newName;  // 또는 DOM을 직접 수정
+                } else if (data.duplicate) {
+                    alert("이름 혹은 이메일이 중복 상태이거나, 다른 오류로 회원 정보 변경에 실패했습니다.");
+                }
+
+            } catch (error) {
+                console.error("API Error:", error);
+            }
+        }
+
+
+
+    </script>
+</head>
+
+<body>
+
+<form>
+    <h2>회원정보 수정<br></h2>
+
+    ID: <span id="memberId"></span>
+    현재 이름 (읽기 전용) : <input type="text" id="name_recent" placeholder="현재 이름" readonly>
+    변경 이름 : <input type="text" id="name_modify" placeholder="변경 이름"><button onclick="checkDuplicateName(event)" style="width: 160px;">이름 중복확인</button>
+    <button onclick="resetNameInput(event)" style="width: 160px;">이름 재입력</button>
+    현재 이메일 (읽기 전용) : <input type="text" id="email_recent" placeholder="현재 이름" readonly>
+    변경 이메일 : <input type="text" id="email_modify" placeholder="변경 이메일"> <button onclick="checkDuplicateEmail(event)">이메일 중복확인</button>
+    <button onclick="resetEmailInput(event)" style="width: 160px;">이메일 재입력</button>
+
+    <button onclick="updateAccountInfo(event)">변경 확정</button>
+    <!-- <button onclick="window.location.href='../account/account_info.html'">뒤로 가기</button> -->
+    <button onclick="navigateToAccountInfoPage(event)">뒤로 가기 (회원정보 열람)</button>
+</form>
+</body>
+

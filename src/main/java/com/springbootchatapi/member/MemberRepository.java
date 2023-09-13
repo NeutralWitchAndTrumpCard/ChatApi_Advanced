@@ -26,4 +26,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         logger.info("Fetching member by id: {}", id);
         return findById(id).orElse(null);
     }
+
+
+    Optional<Member> findByName(String name);
+
+    Optional<Member> findByEmail(String email);
 }

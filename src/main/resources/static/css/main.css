@@ -52,7 +52,7 @@ h4 {font-size: 32px;}
 }
 
 .code-header {
-    background-color: gray;
+    background-color: #D8D8D8; <!-- gray -->
     padding: 5px;
     display: flex;
     justify-content: space-between;
